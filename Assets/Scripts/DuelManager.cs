@@ -1,10 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
+using Rewired;
 using UnityEngine;
 using UnityEngine.UI;
-using DG.Tweening;
 
-public class DuelManager : MonoBehaviour {
+public class DuelManager : MonoBehaviour
+{
     public GameObject duelPrompt;
     public GameObject duelAnimeEffect;
     public AudioClip duelStart, promptSound, duelEnd;
@@ -14,9 +16,9 @@ public class DuelManager : MonoBehaviour {
     public float promptDelay = 1f;
     public float promptWidth = 200f;
 
-    private enum ControllerButton { A = 0, B = 1, X = 2, Y = 3 };
-    private Dictionary<ControllerButton, string> buttonStrings = new Dictionary<ControllerButton, string>() {
-        { ControllerButton.A, "360_A" }, { ControllerButton.B, "360_B" }, { ControllerButton.X, "360_X" }, { ControllerButton.Y, "360_Y" }
+    private enum ControllerButton { A = 0, B = 1, X = 2, Y = 3 }
+    private Dictionary<ControllerButton, string> buttonStrings = new Dictionary<ControllerButton, string>()
+    { { ControllerButton.A, "360_A" }, { ControllerButton.B, "360_B" }, { ControllerButton.X, "360_X" }, { ControllerButton.Y, "360_Y" }
     };
 
     private ControllerButton promptButton;
@@ -25,8 +27,8 @@ public class DuelManager : MonoBehaviour {
     private GameObject participant1 = null;
     private GameObject participant2 = null;
 
-    private int p1Num = 0;
-    private int p2Num = 0;
+    private Player player1;
+    private Player player2;
 
     private AudioSource audioSource;
     private Vector3 duelMidpoint = Vector3.zero;
@@ -43,29 +45,46 @@ public class DuelManager : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        if (promptInputAllowed) {
-            if (Input.GetButtonDown("A_P" + p1Num)) {
+        if (promptInputAllowed)
+        {
+            if (player1.GetButtonDown("A"))
+            {
                 GivePromptInput(ControllerButton.A, participant1, participant2);
-            } else if (Input.GetButtonDown("B_P" + p1Num)) {
+            }
+            else if (player1.GetButtonDown("B"))
+            {
                 GivePromptInput(ControllerButton.B, participant1, participant2);
-            } else if (Input.GetButtonDown("X_P" + p1Num)) {
+            }
+            else if (player1.GetButtonDown("X"))
+            {
                 GivePromptInput(ControllerButton.X, participant1, participant2);
-            } else if (Input.GetButtonDown("Y_P" + p1Num)) {
+            }
+            else if (player1.GetButtonDown("Y"))
+            {
                 GivePromptInput(ControllerButton.Y, participant1, participant2);
-            } else if (Input.GetButtonDown("A_P" + p2Num)) {
+            }
+            else if (player2.GetButtonDown("A"))
+            {
                 GivePromptInput(ControllerButton.A, participant2, participant1);
-            } else if (Input.GetButtonDown("B_P" + p2Num)) {
+            }
+            else if (player2.GetButtonDown("B"))
+            {
                 GivePromptInput(ControllerButton.B, participant2, participant1);
-            } else if (Input.GetButtonDown("X_P" + p2Num)) {
+            }
+            else if (player2.GetButtonDown("X"))
+            {
                 GivePromptInput(ControllerButton.X, participant2, participant1);
-            } else if (Input.GetButtonDown("Y_P" + p2Num)) {
+            }
+            else if (player2.GetButtonDown("Y"))
+            {
                 GivePromptInput(ControllerButton.Y, participant2, participant1);
             }
         }
     }
 
     // determines whether the specified input is correct or not, and resolves the duel accordingly
-    private void GivePromptInput(ControllerButton button, GameObject player, GameObject enemy) {
+    private void GivePromptInput(ControllerButton button, GameObject player, GameObject enemy)
+    {
         // prevent any more prompt input
         promptInputAllowed = false;
 
@@ -74,11 +93,14 @@ public class DuelManager : MonoBehaviour {
 
         DashAttack killer;
         Vector3 killedPos;
-        if (button == promptButton) {
+        if (button == promptButton)
+        {
             killer = player.GetComponent<DashAttack>();
             enemy.GetComponent<PlayerDeath>().Die();
             killedPos = enemy.transform.position;
-        } else {
+        }
+        else
+        {
             killer = enemy.GetComponent<DashAttack>();
             player.GetComponent<PlayerDeath>().Die();
             killedPos = player.transform.position;
@@ -97,19 +119,21 @@ public class DuelManager : MonoBehaviour {
 
         // move camera over player who is about to die
         Tweener cameraMove = Camera.main.transform.DOMove(killedPos, killDuration / 4f)
-            .OnComplete(()=> audioSource.PlayOneShot(duelEnd));
+            .OnComplete(() => audioSource.PlayOneShot(duelEnd));
 
         // add camera shake
-        Tweener cameraShake = Camera.main.transform.DOShakePosition(3f * (killDuration / 4f), new Vector3(5f, 5f, 0f), vibrato: 20)
+        Tweener cameraShake = Camera.main.transform.DOShakePosition(3f * (killDuration / 4f), new Vector3(5f, 5f, 0f), vibrato : 20)
             .OnKill(EndDuel); // end the duel after watching the kill
 
         cameraSequence.Append(cameraMove).Append(cameraShake);
         cameraSequence.Play();
     }
 
-    public void CreateDuel(GameObject p1, GameObject p2) {
+    public void CreateDuel(GameObject p1, GameObject p2)
+    {
         // don't start a duel if one is already happening
-        if (duelIsHappening) {
+        if (duelIsHappening)
+        {
             return;
         }
 
@@ -118,7 +142,8 @@ public class DuelManager : MonoBehaviour {
 
         // disable input for all players
         InputManager[] inputs = FindObjectsOfType<InputManager>();
-        foreach (InputManager input in inputs) {
+        foreach (InputManager input in inputs)
+        {
             input.canReceiveInput = false;
         }
 
@@ -130,8 +155,10 @@ public class DuelManager : MonoBehaviour {
         participant2 = p2;
 
         // get player numbers so we can get their input for the button prompt
-        p1Num = (int)participant1.GetComponent<InputManager>().playerNumber;
-        p2Num = (int)participant2.GetComponent<InputManager>().playerNumber;
+        int p1Num = (int)participant1.GetComponent<InputManager>().playerNumber;
+        int p2Num = (int)participant2.GetComponent<InputManager>().playerNumber;
+        player1 = ReInput.players.GetPlayer(p1Num - 1);
+        player2 = ReInput.players.GetPlayer(p2Num - 1);
 
         // put the participants in an array to perform repeated operations
         GameObject[] participants = new GameObject[2] { participant1, participant2 };
@@ -140,7 +167,8 @@ public class DuelManager : MonoBehaviour {
         duelMidpoint = (participant1.transform.position + participant2.transform.position) / 2f;
 
         // disable both players' input and align them to face each other equidistant around a midpoint
-        foreach (GameObject obj in participants) {
+        foreach (GameObject obj in participants)
+        {
             // get vector from player position to midpoint
             Vector3 vectorToDuelMidpoint = obj.transform.position - duelMidpoint;
 
@@ -157,7 +185,7 @@ public class DuelManager : MonoBehaviour {
             // disable overhead player number
             obj.transform.Find("AbovePlayerCanvas").Find("PlayerNumberCenter").gameObject.SetActive(false);
         }
-        
+
         // get point to which camera will move
         Vector3 cameraCenter = duelMidpoint;
         cameraCenter.z = Camera.main.transform.position.z;
@@ -179,25 +207,29 @@ public class DuelManager : MonoBehaviour {
         promptButton = (ControllerButton)Random.Range(0, 4);
         duelPrompt.GetComponent<Image>().sprite = Resources.Load<Sprite>(buttonStrings[promptButton]);
         RectTransform duelPromptTransform = duelPrompt.GetComponent<RectTransform>();
-        DOTween.To(()=> duelPromptTransform.sizeDelta, x=> duelPromptTransform.sizeDelta = x, new Vector2(promptWidth, promptWidth), 0.05f)
+        DOTween.To(() => duelPromptTransform.sizeDelta, x => duelPromptTransform.sizeDelta = x, new Vector2(promptWidth, promptWidth), 0.05f)
             .SetDelay(promptDelay).OnStart(AllowPromptInput).SetUpdate(true);
     }
 
-    private void AllowPromptInput() {
+    private void AllowPromptInput()
+    {
         audioSource.PlayOneShot(promptSound);
         promptInputAllowed = true;
     }
 
-    public void EndDuel() {
+    public void EndDuel()
+    {
         // re-enable input for all players
         InputManager[] inputs = FindObjectsOfType<InputManager>();
-        foreach (InputManager input in inputs) {
+        foreach (InputManager input in inputs)
+        {
             input.canReceiveInput = true;
         }
 
         GameObject[] participants = new GameObject[2] { participant1, participant2 };
 
-        foreach (GameObject obj in participants) {
+        foreach (GameObject obj in participants)
+        {
             // enable overhead player number
             obj.transform.Find("AbovePlayerCanvas").Find("PlayerNumberCenter").gameObject.SetActive(true);
         }
@@ -205,8 +237,8 @@ public class DuelManager : MonoBehaviour {
         // reset global variables
         participant1 = null;
         participant2 = null;
-        p1Num = 0;
-        p2Num = 0;
+        player1 = null;
+        player2 = null;
         duelMidpoint = Vector3.zero;
         promptInputAllowed = false;
 

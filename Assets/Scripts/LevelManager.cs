@@ -20,8 +20,10 @@ public class LevelManager : MonoBehaviour
         SpawnPlayers();
     }
 
-    private void Update() {
-        if (Input.GetButtonDown("Restart")) {
+    private void Update()
+    {
+        if (Input.GetButtonDown("Restart"))
+        {
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
     }
@@ -44,11 +46,12 @@ public class LevelManager : MonoBehaviour
         List<GameObject> levelObjects = new List<GameObject>(GameObject.FindGameObjectsWithTag("SpawnPoint"));
         levelObjects.AddRange(GameObject.FindGameObjectsWithTag("Obstacle"));
 
-        foreach(GameObject obj in levelObjects)
+        foreach (GameObject obj in levelObjects)
         {
             int row = Random.Range(0, points.Count);
             int rowCount = 0;
-            while (points[row].Count == 0 && rowCount < points.Count) {
+            while (points[row].Count == 0 && rowCount < points.Count)
+            {
                 row = (row + 1) % points.Count;
                 rowCount++;
             }
@@ -81,6 +84,5 @@ public class LevelManager : MonoBehaviour
             spawns.RemoveAt(spIndex);
         }
     }
-
 
 }

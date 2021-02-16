@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Rewired;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,18 +12,22 @@ public class InputManager : MonoBehaviour
     public Text playerNumberText;
     public bool canReceiveInput = true;
 
+    private Player player;
+
     private MovementController movement;
     private DashAttack dashAttack;
     private BlockAttack blockAttack;
     private ChargeManager charge;
     private EmoteManager emotes;
 
-    private string horizontalInput;
-    private string verticalInput;
-    private string dashInput;
-    private string blockInput;
-    private string dPadHorizontal;
-    private string dPadVertical;
+    private static string horizontalInput = "Move Horizontal";
+    private static string verticalInput = "Move Vertical";
+    private static string dashInput = "Attack";
+    private static string blockInput = "Block";
+    private static string emote1 = "Emote1";
+    private static string emote2 = "Emote2";
+    private static string emote3 = "Emote3";
+    private static string emote4 = "Emote4";
 
     // Start is called before the first frame update
     void Start()
@@ -34,13 +39,7 @@ public class InputManager : MonoBehaviour
         emotes = GetComponent<EmoteManager>();
 
         int pnum = (int)playerNumber;
-        horizontalInput = "Horizontal_P" + pnum;
-        verticalInput = "Vertical_P" + pnum;
-        dashInput = "Dash_P" + pnum;
-        blockInput = "Block_P" + pnum;
-        dPadHorizontal = "DPadHorizontal_P" + pnum;
-        dPadVertical = "DPadVertical_P" + pnum;
-
+        player = ReInput.players.GetPlayer(pnum - 1);
         playerNumberText.text = "P " + pnum;
     }
 
@@ -49,38 +48,39 @@ public class InputManager : MonoBehaviour
     {
         if (canReceiveInput)
         {
-            if ((Input.GetButtonDown(dashInput) || Input.GetAxisRaw(dashInput) > 0f) && !blockAttack.IsBlocking() && !dashAttack.IsAttacking() && charge.removeCharge(100f))
+            if ((player.GetButtonDown(dashInput) || player.GetAxisRaw(dashInput) > 0f) && !blockAttack.IsBlocking() && !dashAttack.IsAttacking() && charge.removeCharge(100f))
             {
                 dashAttack.Attack();
             }
-            else if ((Input.GetButtonDown(blockInput) || Input.GetAxisRaw(blockInput) > 0f) && !blockAttack.IsBlocking() && !dashAttack.IsAttacking() && charge.removeCharge(50f))
+            else if ((player.GetButtonDown(blockInput) || player.GetAxisRaw(blockInput) > 0f) && !blockAttack.IsBlocking() && !dashAttack.IsAttacking() && charge.removeCharge(50f))
             {
                 blockAttack.Block();
             }
 
-            if (Input.GetAxisRaw(dPadHorizontal) > 0f)
+            if (player.GetButtonDown(emote1))
             {
                 emotes.DisplayEmote(0);
             }
-            else if (Input.GetAxisRaw(dPadHorizontal) < 0f)
+            else if (player.GetButtonDown(emote2))
             {
                 emotes.DisplayEmote(1);
             }
-            else if (Input.GetAxisRaw(dPadVertical) > 0f)
+            else if (player.GetButtonDown(emote3))
             {
                 emotes.DisplayEmote(2);
             }
-            else if (Input.GetAxisRaw(dPadVertical) < 0f)
+            else if (player.GetButtonDown(emote4))
             {
                 emotes.DisplayEmote(3);
             }
         }
     }
 
-    private void FixedUpdate() {
+    private void FixedUpdate()
+    {
         if (canReceiveInput)
         {
-            movement.Move(Input.GetAxisRaw(horizontalInput), Input.GetAxisRaw(verticalInput));
+            movement.Move(player.GetAxisRaw(horizontalInput), player.GetAxisRaw(verticalInput));
         }
     }
 }

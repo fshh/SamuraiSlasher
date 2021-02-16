@@ -18,22 +18,22 @@ public class ScoreBoardManager : MonoBehaviour
         p3Text.GetComponent<PlayerScoreUIManager>().numWins = ScoreSaver.Instance.p3;
         p4Text.GetComponent<PlayerScoreUIManager>().numWins = ScoreSaver.Instance.p4;
         scoreBoards = new List<GameObject>();
-        if(levelMan.numPlayers >= 2)
+        if (levelMan.numPlayers >= 2)
         {
             scoreBoards.Add(p1Text);
             scoreBoards.Add(p2Text);
         }
-        if(levelMan.numPlayers >= 3)
+        if (levelMan.numPlayers >= 3)
         {
             scoreBoards.Add(p3Text);
         }
-        if(levelMan.numPlayers == 4)
+        if (levelMan.numPlayers == 4)
         {
             scoreBoards.Add(p4Text);
         }
-        else
+        if (levelMan.numPlayers < 1 || levelMan.numPlayers > GameSettings.MAX_PLAYERS)
         {
-            Debug.Log("invalid player count");
+            Debug.Log("invalid player count: " + levelMan.numPlayers);
         }
     }
 

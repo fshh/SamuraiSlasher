@@ -15,16 +15,18 @@ public class PlayerColorManager : MonoBehaviour
     public Color P4Dark;
 
     // Sets the colors of the given player object to the colors associated with the given player number
-    public void SetColors(GameObject player, InputManager.PlayerNumber pNum) {
+    public void SetColors(GameObject player, InputManager.PlayerNumber pNum)
+    {
         SpriteRenderer bodySprite = player.GetComponent<SpriteRenderer>();
         SpriteRenderer directionSprite = player.transform.Find("DirectionIndicator").gameObject.GetComponent<SpriteRenderer>();
-        Image chargeBar = player.GetComponentInChildren<Image>();
+        Image chargeBar = player.transform.Find("ChargeBarCanvas").Find("ChargeBar").gameObject.GetComponent<Image>();
         TrailRenderer[] trails = player.GetComponentsInChildren<TrailRenderer>(true);
         Text[] texts = player.GetComponentsInChildren<Text>();
 
         Color light, dark;
 
-        switch (pNum) {
+        switch (pNum)
+        {
             case InputManager.PlayerNumber.ONE:
                 light = P1Light;
                 dark = P1Dark;
@@ -61,17 +63,22 @@ public class PlayerColorManager : MonoBehaviour
         bodySprite.color = light;
         directionSprite.color = light;
         chargeBar.color = dark;
-        foreach (TrailRenderer t in trails) {
+        foreach (TrailRenderer t in trails)
+        {
             t.colorGradient = g;
         }
-        foreach (Text t in texts) {
+        foreach (Text t in texts)
+        {
             t.color = dark;
         }
     }
 
-    public Color GetPlayerColor(bool light, int pNum) {
-        if (light) {
-            switch (pNum) {
+    public Color GetPlayerColor(bool light, int pNum)
+    {
+        if (light)
+        {
+            switch (pNum)
+            {
                 case 1:
                     return P1Light;
                 case 2:
@@ -83,8 +90,11 @@ public class PlayerColorManager : MonoBehaviour
                 default:
                     return Color.white;
             }
-        } else {
-            switch (pNum) {
+        }
+        else
+        {
+            switch (pNum)
+            {
                 case 1:
                     return P1Dark;
                 case 2:

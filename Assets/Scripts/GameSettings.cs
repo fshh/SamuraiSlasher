@@ -20,7 +20,7 @@ public static class GameSettings
 {
     public static readonly int MAX_PLAYERS = 4;
 
-    public static int NumberOfPlayers { private set; get; } = 1;
+    public static int NumberOfPlayers { private set; get; } = 2;
     /// <summary>
     /// A list the of NumberOfPlayers size that
     /// </summary>
@@ -32,7 +32,7 @@ public static class GameSettings
     /// <param name="num">The number of players</param>
     public static void SetNumberOfPlayers(int num)
     {
-        if (num > MAX_PLAYERS || num <= 0)
+        if (num > MAX_PLAYERS || num <= 1)
         {
             throw new System.ArgumentException("Given invalid number of players: " + num);
         }
